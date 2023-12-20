@@ -18,7 +18,6 @@ PLAYER_VEL = 5
 
 # obstacle infos
 OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 20, 50
-OBSTACLE_VEL = 5
 cacto = imagem.subsurface((32*5, 0, 32, 32))
 cacto = pygame.transform.scale(cacto, (OBSTACLE_WIDTH + 20, OBSTACLE_HEIGHT))
 
@@ -61,9 +60,9 @@ class Dino(pygame.Rect):
         self.y = 500
 
 class Obstaculo(pygame.Rect):
-    def __init__(self, x, y):
+    def __init__(self, x, y, velocidade):
         super().__init__(x, y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT)
-        self.vel = OBSTACLE_VEL
+        self.vel = velocidade
 
     
     def move(self):
@@ -79,10 +78,11 @@ def main():
     obs_timer = 0
     max_obs = 7
     pontuacao = 0
+    velocidade_obs = 5
     while run:
         clock.tick(60)
         obs_timer += 1
-        pontuacao += 1
+        pontuacao += round(1 * (velocidade_obs / 5), 0)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -99,9 +99,12 @@ def main():
         dino.gravidade()
         
         # gerando obstaculos
-        if len(obstaculos) == 0 or obstaculos[-1].x < random.randint(500, 1000):
+        # aumentando a velocidade dos obstaculos
+        if pontuacao % 1000 == 0:
+            velocidade_obs += 3
+        if len(obstaculos) == 0 or obstaculos[-1].x < random.randint(int(500 * (velocidade_obs / 3)), int(1000 * (velocidade_obs / 5))):
             if obs_timer > random.randint(100, 500) and len(obstaculos) <= max_obs and obs_timer % 10 == 0:
-                obstaculos.append(Obstaculo(WIDTH, 550))
+                obstaculos.append(Obstaculo(WIDTH, 550, velocidade_obs))
                 obs_timer -= 100
         for obs in obstaculos:
             obs.move()
