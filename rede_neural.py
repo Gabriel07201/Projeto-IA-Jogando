@@ -4,7 +4,7 @@ from torch import optim
 import torch.nn.functional as F
 import os
 
-# criando uma rede com 5 neuronios, 1 camada oculta com 5 neuronios e 2 outputs
+# criando uma rede com 5 neuronios, 1 camada oculta com 5 neuronios e 3 outputs
 # na entrada ela vai receber os seguintes dados: obstaculo distancia, obstaculo largura, obstaculo altura, velocidade do obstaculo, altura do dino
 
 class RedeNeural(nn.Module):
@@ -18,12 +18,13 @@ class RedeNeural(nn.Module):
             nn.ReLU()
         )
         
-        self.out = nn.Linear(5, 2)
-        self.relu = nn.ReLU
+        self.out = nn.Linear(5, 3)
+        # self.relu = nn.ReLU
     
     def forward(self, x):
         feature = self.features(x)
-        output = self.relu(self.out(feature))
+        # output = self.relu(self.out(feature))
+        output = self.out(feature)
         return output
 
 
