@@ -156,7 +156,7 @@ class GameAI:
             recompensa = -100
             return recompensa, game_over, self.pontuacao_atual
         else:
-            recompensa = 10
+            recompensa += 10 
             self.pontuacao_atual += round(1 * (self.velocidade_obs / 10), 0)
         
         self._update_ui()
