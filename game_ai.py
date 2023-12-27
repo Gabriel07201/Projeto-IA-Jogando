@@ -59,6 +59,7 @@ class Obstaculo:
         self.altura = OBSTACLE_ALTURA
         self.img = pygame.transform.scale(pygame.image.load('dinoSpritesheet.png').subsurface((32*5, 0, 32, 32)), (OBSTACLE_LARGURA, OBSTACLE_ALTURA)).convert_alpha()
         self.vel = velocidade
+        self.passado = False
     
     def desenhar(self, tela):
         tela.blit(self.img, (self.x, self.y))
@@ -99,6 +100,7 @@ class GameAI:
         self.pontuacao_atual = 0
         self.velocidade_obs = OBS_VEL_INICIAL
         self.frame_iteration = 0
+        self.obs_passados = 0
     
     def gerar_obs(self):
         self.obstaculos.append(Obstaculo(1000 + random.randint(100, 500), OBS_Y, self.velocidade_obs))
@@ -106,14 +108,19 @@ class GameAI:
     def mover_obs(self):
         for obs in self.obstaculos:
             obs.mover()
+            if self.dino.x > obs.x and obs.passado == False:
+                obs.passado = True
+                self.obs_passados += 1
             if obs.x < -100:
                 self.obstaculos.remove(obs)
     
     def pegar_prox_obs(self):
         next_obs = None
+        min_x = float('inf')
         for obs in self.obstaculos:
-            if obs.x > self.dino.x:
+            if obs.x > self.dino.x and obs.x < min_x:
                 next_obs = obs
+                min_x = obs.x
         return next_obs
         
     
@@ -156,7 +163,7 @@ class GameAI:
             recompensa = -100
             return recompensa, game_over, self.pontuacao_atual
         else:
-            recompensa += 10 
+            recompensa = 10 * self.obs_passados
             self.pontuacao_atual += round(1 * (self.velocidade_obs / 10), 0)
         
         self._update_ui()
